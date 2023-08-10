@@ -1,0 +1,29 @@
+if [[ $1 == "" ]]
+then
+	echo "usage : $0 {file to be splitted}"
+	exit 99
+else
+	SFILE=$1
+	STEMP=$SFILE"_TMP"
+fi
+
+firstLine=`head -1 $SFILE`
+lcSFILE=`wc -l $SFILE`
+
+tail -n +2 $SFILE > $STEMP
+
+if [[ $2 == "" ]]
+then
+	lineToSplit=1500
+else
+	lineToSplit=$2
+fi
+
+split -l $lineToSplit $STEMP splitted_
+
+
+for tfile in splitted_*; do
+    { echo $firstLine; cat "$tfile"; } > "$tfile.tmp" && mv "$tfile.tmp" "$tfile".csv && rm "$tfile"
+done
+
+rm $STEMP
